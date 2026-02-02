@@ -2,24 +2,33 @@
 <html>
 <head>
   <title>Random Typing Challenge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- mobile scaling -->
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 30px;
+      margin: 20px 10px;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
     }
 
     input[type="text"] {
       font-size: 18px;
-      padding: 10px;
-      width: 360px;
-      margin: 6px;
+      padding: 12px;
+      width: 90%;        /* responsive width */
+      max-width: 500px;  /* optional for bigger screens */
+      margin: 6px auto;
+      display: block;    /* center input */
     }
 
     button {
-      font-size: 16px;
-      padding: 10px 18px;
-      margin: 6px;
+      font-size: 18px;   /* bigger text for phones */
+      padding: 14px 20px;
+      margin: 6px 4px;
+      min-width: 100px;  /* easier to tap */
     }
 
     #timer {
@@ -32,14 +41,15 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
+      gap: 6px;       /* smaller gap for mobile */
       margin: 6px;
       font-size: 18px;
+      flex-wrap: wrap;   /* wrap if screen is small */
     }
 
     .switch-row input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
     }
   </style>
 </head>
@@ -63,7 +73,7 @@
 
 <br>
 <button onclick="generateRWG()">RWG</button>
-<button onclick="generateHardRWG()">Hard RWG 💀</button>
+<button onclick="generateHardRWG()">Hard RWG</button>
 
 <p><b>Your attempt (buttons only):</b></p>
 <input type="text" id="gameInput" readonly inputmode="none"
@@ -91,10 +101,10 @@
 
   const RWG_WORDS = [
     "chaos","random","typing","challenge","uppercase","backspace",
-    "algorithm","groupchat","developer","keyboard","glitch",
+    "algorithm","smasher","developer","keyboard","glitch",
     "control","frustration","precision","probability",
-    "impossible","unlucky","victory","suffering","laughter",
-    "rounds"
+    "impossible","unlucky","victory","suffering","rounds",
+    "groupchat"
   ];
 
   const HARD_RWG_WORDS = [
@@ -106,7 +116,7 @@
     "floccinaucinihilipilificatiophobia",
     "pseudopseudohypoparathyroidism",
     "supercalifragilisticexpialidocious",
-    "eellogofusciouhipoppokunurious","hexakosioihexekontahexaphobia","antidisestablishmentarianism"
+    "eellogofusciouhipoppokunurious"
   ];
 
   // Enforce uppercase rules on objective input
@@ -139,7 +149,7 @@
 
   function startGame() {
     gameInput.value = "";
-    timerDisplay.textContent = "⏱ 00:00:00";
+    timerDisplay.textContent = "⏱️ 00:00:00";
     startTime = Date.now();
     running = true;
 
@@ -208,4 +218,4 @@
 </script>
 
 </body>
-</html>
+  </html>
