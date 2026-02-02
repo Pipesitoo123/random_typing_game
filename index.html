@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Random Typing Challenge</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    input[type="text"] {
+      font-size: 18px;
+      padding: 10px;
+      width: 360px;
+      margin: 6px;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 10px 18px;
+      margin: 6px;
+    }
+
+    #timer {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    .switch-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin: 6px;
+      font-size: 18px;
+    }
+
+    .switch-row input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>🎯 Random Typing Challenge</h2>
+
+<div class="switch-row">
+  <input type="checkbox" id="uppercaseToggle">
+  <label for="uppercaseToggle">Uppercase ON / OFF</label>
+</div>
+
+<div class="switch-row">
+  <input type="checkbox" id="ezToggle">
+  <label for="ezToggle">EZ Mode ON / OFF</label>
+</div>
+
+<p><b>Objective (you CAN type here):</b></p>
+<input type="text" id="targetInput" placeholder="Type the goal">
+
+<br>
+<button onclick="generateRWG()">RWG</button>
+<button onclick="generateHardRWG()">Hard RWG 💀</button>
+
+<p><b>Your attempt (buttons only):</b></p>
+<input type="text" id="gameInput" readonly inputmode="none"
+       style="caret-color: transparent;">
+
+<br>
+
+<button onclick="startGame()">Start Stopwatch</button>
+<br>
+<button onclick="addRandomLetter()">Random Letter</button>
+<button onclick="backspace()">Backspace</button>
+
+<div id="timer">⏱️ 00:00:00</div>
+
+<script>
+  let startTime = null;
+  let timerInterval = null;
+  let running = false;
+
+  const targetInput = document.getElementById("targetInput");
+  const gameInput = document.getElementById("gameInput");
+  const uppercaseToggle = document.getElementById("uppercaseToggle");
+  const ezToggle = document.getElementById("ezToggle");
+  const timerDisplay = document.getElementById("timer");
+
+  const RWG_WORDS = [
+    "chaos","random","typing","challenge","uppercase","backspace",
+    "algorithm","groupchat","developer","keyboard","glitch",
+    "control","frustration","precision","probability",
+    "impossible","unlucky","victory","suffering","laughter",
+    "rounds"
+  ];
+
+  const HARD_RWG_WORDS = [
+    "pneumonoultramicroscopicsilicovolcaniconiosis",
+    "laryngotracheobronchitis",
+    "chargoggagoggmanchauggagoggchaubunagungamaugg",
+    "hippopotomonstrosesquippedaliophobia",
+    "floccinaucinihilipilification",
+    "floccinaucinihilipilificatiophobia",
+    "pseudopseudohypoparathyroidism",
+    "supercalifragilisticexpialidocious",
+    "eellogofusciouhipoppokunurious","hexakosioihexekontahexaphobia","antidisestablishmentarianism"
+  ];
+
+  // Enforce uppercase rules on objective input
+  targetInput.addEventListener("input", () => {
+    if (!uppercaseToggle.checked) {
+      targetInput.value = targetInput.value.toLowerCase();
+    }
+  });
+
+  function applyCaseRules(word) {
+    if (uppercaseToggle.checked) {
+      return word
+        .split("")
+        .map(ch => Math.random() < 0.5 ? ch.toUpperCase() : ch.toLowerCase())
+        .join("");
+    } else {
+      return word.toLowerCase();
+    }
+  }
+
+  function generateRWG() {
+    const word = RWG_WORDS[Math.floor(Math.random() * RWG_WORDS.length)];
+    targetInput.value = applyCaseRules(word);
+  }
+
+  function generateHardRWG() {
+    const word = HARD_RWG_WORDS[Math.floor(Math.random() * HARD_RWG_WORDS.length)];
+    targetInput.value = applyCaseRules(word);
+  }
+
+  function startGame() {
+    gameInput.value = "";
+    timerDisplay.textContent = "⏱ 00:00:00";
+    startTime = Date.now();
+    running = true;
+
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(updateTimer, 10);
+  }
+
+  function updateTimer() {
+    if (!running) return;
+
+    const elapsedMs = Date.now() - startTime;
+    const minutes = Math.floor(elapsedMs / 60000);
+    const seconds = Math.floor((elapsedMs % 60000) / 1000);
+    const ms = Math.floor((elapsedMs % 1000) / 10);
+
+    timerDisplay.textContent =
+      "⏱️ " +
+      String(minutes).padStart(2, "0") + ":" +
+      String(seconds).padStart(2, "0") + ":" +
+      String(ms).padStart(2, "0");
+  }
+
+  function addRandomLetter() {
+    if (!running) return;
+
+    let letters = uppercaseToggle.checked
+      ? "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+      : "abcdefghijklmnopqrstuvwxyz";
+
+    const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+    gameInput.value += randomLetter;
+
+    checkWin();
+  }
+
+  function backspace() {
+    if (!running) return;
+
+    if (ezToggle.checked) {
+      const current = gameInput.value;
+      const target = targetInput.value;
+
+      if (
+        current.length > 0 &&
+        current.length <= target.length &&
+        current[current.length - 1] === target[current.length - 1]
+      ) {
+        return;
+      }
+    }
+
+    gameInput.value = gameInput.value.slice(0, -1);
+    checkWin();
+  }
+
+  function checkWin() {
+    if (
+      targetInput.value !== "" &&
+      gameInput.value === targetInput.value
+    ) {
+      running = false;
+      clearInterval(timerInterval);
+      timerDisplay.textContent += " 🎉 DONE!";
+    }
+  }
+</script>
+
+</body>
+</html>
